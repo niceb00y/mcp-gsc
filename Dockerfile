@@ -1,12 +1,8 @@
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 WORKDIR /app
-
-# Copy dependency files first for layer caching — deps only reinstall when these change
 COPY pyproject.toml README.md ./
 RUN uv sync --no-cache --no-install-project
-
-# Copy application code
 COPY gsc_server.py .
-
-# Default to stdio transport; override with MCP_TRANSPORT=sse for remote/network use
-CMD ["uv", "run", "--no-sync", "python", "gsc_server.py"]
+ENV MCP_TRANSPORT=http MCP_HOST=0.0.0.0 MCP_PORT=3001 GSC_SKIP_OAUTH=true GSC_ALLOW_DESTRUCTIVE=false
+EXPOSE 3001
+CMD ["sh","-c","printf '%s' \"$GSC_CREDENTIALS_JSON\" > /tmp/sa.json && export GSC_CREDENTIALS_PATH=/tmp/sa.json && exec uv run --no-sync python gsc_server.py"]

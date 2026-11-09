@@ -1789,7 +1789,7 @@ def main():
             mcp.settings.transport_security.enable_dns_rebinding_protection = False
         except Exception:
             pass
-        mcp.run(transport="sse")
+        mcp.run(transport="streamable-http")
     else:
         raise ValueError(
             f"Unknown MCP_TRANSPORT '{transport}'. "
